@@ -106,7 +106,7 @@ impl AccentEditor {
                     append: &accent_color_button,
 
                     append: label =  &Label {
-                        set_text: "Accent Color",
+                        set_text: "Choose Color",
                     },
                 },
                 // palette
@@ -376,9 +376,11 @@ impl AccentEditor {
                     set_widget_name: &c.name,
                     set_group: palette_toggles.get(0),
                     set_active: active,
-                    connect_toggled: glib::clone!(@weak self as self_, @weak imp.accent_button as accent_button => move |_| {
-                        accent_button.get().unwrap().set_rgba(&c.accent_color_bg);
-                        self_.set_accent();
+                    connect_toggled: glib::clone!(@weak self as self_, @weak imp.accent_button as accent_button => move |b| {
+                        if b.is_active() {
+                            accent_button.get().unwrap().set_rgba(&c.accent_color_bg);
+                            self_.set_accent();
+                        }
                     })
                 }
             };
