@@ -88,7 +88,6 @@ pub fn derive_color(
         // verify contrast
         let actual_contrast = lch_color_derived.get_contrast_ratio(&lch_color.into_color());
         if !approx_eq!(f32, target_contrast, actual_contrast, ulps = 4) {
-            dbg!((actual_contrast, lch_color, lch_color_derived));
             anyhow::bail!("Failed to derive color with contrast {}", target_contrast,);
         }
 
