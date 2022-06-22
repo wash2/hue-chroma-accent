@@ -49,36 +49,33 @@ pub fn get_lch(c: RGBA) -> Lch {
     c.into_format().into_color()
 }
 
-// TODO replace this with something better
 pub fn derive_color(
-    mut lch_color: Lch,
+    lch_color: Lch,
     contrast: Option<f32>,
     lighten: Option<bool>,
 ) -> anyhow::Result<Lch> {
+    let mut lch_color_derived = lch_color.clone();
     // lighten or darken
     // TODO closed form solution using Lch color space contrast formula?
     // for now do binary search...
 
-    if let Some(contrast) = contrast {
+    if let Some(target_contrast) = contrast {
         let (min, max) = match lighten {
-            Some(b) if b => (lch_color.l, 100.0),
-            Some(_) => (0.0, lch_color.l),
+            Some(b) if b => (lch_color_derived.l, 100.0),
+            Some(_) => (0.0, lch_color_derived.l),
             None => (0.0, 100.0),
         };
         let (mut l, mut r) = (min, max);
 
         for _ in 0..100 {
             let cur_guess_lightness = (l + r) / 2.0;
-            let mut cur_guess = lch_color;
-            cur_guess.l = cur_guess_lightness;
-            let cur_contrast = lch_color.get_contrast_ratio(&cur_guess.into_color());
-            let contrast_dir = contrast > cur_contrast;
-            let lightness_dir = lch_color.l < cur_guess.l;
-            if approx_eq!(f32, contrast, cur_contrast, ulps = 4) {
-                lch_color = cur_guess;
+            lch_color_derived.l = cur_guess_lightness;
+            let cur_contrast = lch_color.get_contrast_ratio(&lch_color_derived.into_color());
+            let move_away = target_contrast > cur_contrast;
+            let is_darker = lch_color.l < lch_color_derived.l;
+            if approx_eq!(f32, target_contrast, cur_contrast, ulps = 4) {
                 break;
-                // TODO fix
-            } else if lightness_dir && contrast_dir || !lightness_dir && !contrast_dir {
+            } else if is_darker && move_away || !is_darker && !move_away {
                 l = cur_guess_lightness;
             } else {
                 r = cur_guess_lightness;
@@ -86,15 +83,16 @@ pub fn derive_color(
         }
 
         // clamp to valid value in range
-        lch_color.clamp_self();
+        lch_color_derived.clamp_self();
 
         // verify contrast
-        let actual_contrast = lch_color.get_contrast_ratio(&lch_color.into_color());
-        if !approx_eq!(f32, contrast, actual_contrast, ulps = 4) {
-            anyhow::bail!("Failed to derive color with contrast {}", contrast,);
+        let actual_contrast = lch_color_derived.get_contrast_ratio(&lch_color.into_color());
+        if !approx_eq!(f32, target_contrast, actual_contrast, ulps = 4) {
+            dbg!((actual_contrast, lch_color, lch_color_derived));
+            anyhow::bail!("Failed to derive color with contrast {}", target_contrast,);
         }
 
-        Ok(lch_color.into_color())
+        Ok(lch_color_derived.into_color())
     } else {
         // maximize contrast if no constraint is given
         if lch_color.l > 50.0 {

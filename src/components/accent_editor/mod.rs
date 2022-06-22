@@ -16,7 +16,7 @@ use adw::{
     ColorScheme,
 };
 use cascade::cascade;
-use palette::{IntoColor, Lch, Srgb};
+use palette::{IntoColor, Lch, Srgb, white_point::D65};
 use relm4_macros::view;
 use std::fmt::Display;
 
@@ -194,10 +194,6 @@ impl AccentEditor {
 
         use_palette_switch.connect_state_set(glib::clone!(@weak self_, @weak imp.palette_buttons as palette_buttons => @default-return gtk::Inhibit(false), move |_, active| {
             self_.set_accent();
-
-            for b in palette_buttons.borrow().as_slice() {
-                b.set_sensitive(active);
-            }
             gtk::Inhibit(false)
         }));
         let is_dark = style_manager.is_dark();
@@ -236,7 +232,7 @@ impl AccentEditor {
         let accent_button = imp.accent_button.get().unwrap();
 
         let c = accent_button.rgba();
-        let lch_c = util::get_lch(c);
+        let mut lch_c = util::get_lch(c);
         let is_dark = style_manager.is_dark();
 
         if use_palette_switch.is_active() {
@@ -283,18 +279,29 @@ impl AccentEditor {
             );
             css_provider.load_from_data(style.as_bytes());
         } else {
-            // TODO derive colors with fixed lightness values that depend on color scheme mode
-            // calculate colors automatically
-            let derived_accent_as_fg: SRGB = SRGB(
-                util::derive_color(lch_c, Some(0.3), Some(is_dark))
-                    .unwrap_or(lch_c)
-                    .into_color(),
-            );
-            let derived_fg = if !is_dark {
-                SRGB(Srgb::new(0.0, 0.0, 0.0))
+            // derive colors automatically
+            (lch_c.l) = if is_dark {
+                Lch::<D65>::min_l()
             } else {
-                SRGB(Srgb::new(1.0, 1.0, 1.0))
+                Lch::<D65>::max_l()
             };
+            let (derived_fg, fg_contrast, bg_contrast) = if is_dark {
+                (SRGB(Srgb::new(1.0, 1.0, 1.0)), 15.0, 5.0)
+            } else {
+                (SRGB(Srgb::new(0.0, 0.0, 0.0)), 7.0, 1.1) // 7.0 & 1.1 are minimum required
+            };
+            let derived_accent_as_fg: SRGB = if let Ok(fg_c) = util::derive_color(lch_c, Some(fg_contrast), None) {
+                SRGB(fg_c.into_color())
+            } else {
+                derived_fg
+            };
+            let derived_bg: SRGB = SRGB(util::derive_color(lch_c, Some(bg_contrast), None)
+            .unwrap_or_else(|e| {
+                dbg!(e);
+                lch_c
+            })
+            .into_color());
+
             let mut style = css_provider.to_str().to_string();
             style += &format!(
                 r#"
@@ -303,7 +310,7 @@ impl AccentEditor {
             @define-color accent_fg_color #{};
             "#,
                 util::hex_from_rgba(derived_accent_as_fg.into()),
-                util::hex_from_rgba(c),
+                util::hex_from_rgba(derived_bg.into()),
                 util::hex_from_rgba(derived_fg.into())
             );
             css_provider.load_from_data(style.as_bytes());
@@ -326,12 +333,14 @@ impl AccentEditor {
         };
 
         for c in palette {
+            
             view! {
                 button = &ToggleButton {
                     add_css_class: "opaque",
                     set_widget_name: &c.name,
                     set_group: palette_toggles.get(0),
-                    connect_toggled: glib::clone!(@weak self as self_ => move |_| {
+                    connect_toggled: glib::clone!(@weak self as self_, @weak imp.accent_button as accent_button => move |_| {
+                        accent_button.get().unwrap().set_rgba(&c.accent_color_bg);
                         self_.set_accent();
                     })
                 }
@@ -340,7 +349,6 @@ impl AccentEditor {
             palette_toggles.push(button);
         }
 
-        // TODO connect palette buttons HERE
         imp.palette_buttons.replace(palette_toggles);
     }
 }

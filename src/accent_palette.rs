@@ -2,7 +2,6 @@ use adw::{
     gtk::{gdk::RGBA, StyleContext},
     prelude::StyleContextExt,
 };
-// TODO make palette editable
 
 #[derive(Debug, Clone)]
 pub struct AccentPalette {
