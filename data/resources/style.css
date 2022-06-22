@@ -1,0 +1,122 @@
+.title-header{
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.accented-text {
+  color: @accent_color;
+}
+
+@define-color red_light_as_fg #a51d2d;
+@define-color red_light_bg #e01b24;
+@define-color red_light_fg #000000;
+
+@define-color orange_light_as_fg #c64600;
+@define-color orange_light_bg #ff7800;
+@define-color orange_light_fg #000000;
+
+@define-color yellow_light_as_fg #e5a50a;
+@define-color yellow_light_bg #f6d32d;
+@define-color yellow_light_fg #000000;
+
+@define-color green_light_as_fg #26a269;
+@define-color green_light_bg #33d17a;
+@define-color green_light_fg #000000;
+
+@define-color blue_light_as_fg #1a5fb4;
+@define-color blue_light_bg #3584e4;
+@define-color blue_light_fg #000000;
+
+@define-color purple_light_as_fg #613583;
+@define-color purple_light_bg #9141ac;
+@define-color purple_light_fg #000000;
+
+@define-color brown_light_as_fg #63452c;
+@define-color brown_light_bg #986a44;
+@define-color brown_light_fg #000000;
+
+@define-color grey_light_as_fg #3d3846;
+@define-color grey_light_bg #77767b;
+@define-color grey_light_fg #000000;
+
+#RED_DARK {
+  background-color: @red_light_bg;
+}
+#ORANGE_DARK {
+  background-color: @orange_light_bg;
+}
+#YELLOW_DARK {
+  background-color: @yellow_light_bg;
+}
+#GREEN_DARK {
+  background-color: @green_light_bg;
+}
+#BLUE_DARK {
+  background-color: @blue_light_bg;
+}
+#PURPLE_DARK {
+  background-color: @purple_light_bg;
+}
+#BROWN_DARK {
+  background-color: @brown_light_bg;
+}
+#GREY_DARK {
+  background-color: @grey_light_bg;
+}
+
+@define-color red_dark_as_fg #f66151;
+@define-color red_dark_bg #e01b24;
+@define-color red_dark_fg #FFFFFF;
+
+@define-color orange_dark_as_fg #ffbe6f;
+@define-color orange_dark_bg #ff7800;
+@define-color orange_dark_fg #FFFFFF;
+
+@define-color yellow_dark_as_fg #f9f06b;
+@define-color yellow_dark_bg #f6d32d;
+@define-color yellow_dark_fg #000000;
+
+@define-color green_dark_as_fg #8ff0a4;
+@define-color green_dark_bg #33d17a;
+@define-color green_dark_fg #FFFFFF;
+
+@define-color blue_dark_as_fg #99c1f1;
+@define-color blue_dark_bg #3584e4;
+@define-color blue_dark_fg #FFFFFF;
+
+@define-color purple_dark_as_fg #dc8add;
+@define-color purple_dark_bg #9141ac;
+@define-color purple_dark_fg #FFFFFF;
+
+@define-color brown_dark_as_fg #cdab8f;
+@define-color brown_dark_bg #986a44;
+@define-color brown_dark_fg #FFFFFF;
+
+@define-color grey_dark_as_fg #deddda;
+@define-color grey_dark_bg #9a9996;
+@define-color grey_dark_fg #FFFFFF;
+
+#RED_LIGHT {
+  background-color: @red_light_bg;
+}
+#ORANGE_LIGHT {
+  background-color: @orange_light_bg;
+}
+#YELLOW_LIGHT {
+  background-color: @yellow_light_bg;
+}
+#GREEN_LIGHT {
+  background-color: @green_light_bg;
+}
+#BLUE_LIGHT {
+  background-color: @blue_light_bg;
+}
+#PURPLE_LIGHT {
+  background-color: @purple_light_bg;
+}
+#BROWN_LIGHT {
+  background-color: @brown_light_bg;
+}
+#GREY_LIGHT {
+  background-color: @grey_light_bg;
+}

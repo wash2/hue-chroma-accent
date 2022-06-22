@@ -1,0 +1,40 @@
+{
+    "app-id": "com.github.wash2.HueChromaAccent.Devel",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "42",
+    "sdk": "org.gnome.Sdk",
+    "sdk-extensions": ["org.freedesktop.Sdk.Extension.rust-stable"],
+    "command": "hue-chroma-accent",
+    "finish-args" : [
+        "--socket=fallback-x11",
+        "--socket=wayland",
+        "--device=dri",
+        "--env=RUST_LOG=hue_chroma_accent=debug",
+        "--env=G_MESSAGES_DEBUG=none",
+        "--env=RUST_BACKTRACE=1"
+    ],
+    "build-options" : {
+        "append-path" : "/usr/lib/sdk/rust-stable/bin",
+        "build-args" : [
+            "--share=network"
+        ],
+        "test-args": [
+            "--socket=x11",
+            "--share=network"
+        ]
+    },
+    "modules": [
+        {
+            "name": "hue-chroma-accent",
+            "buildsystem": "meson",
+            "run-tests": true,
+            "config-opts": ["-Dprofile=development"],
+            "sources": [
+                {
+                    "type": "dir",
+                    "path": "../"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,24 @@
+[package]
+name = "hue-chroma-accent"
+version = "0.1.0"
+authors = ["Ashley Wulber <ashley@system76.com>"]
+edition = "2021"
+
+[dependencies]
+palette = { version = "0.6", features = ["serializing"] }
+anyhow = "1.0"
+adw = {version = "0.1.1", package = "libadwaita"}
+relm4-macros = { git = "https://github.com/AaronErhardt/Relm4"}
+once_cell = "1.9.0"
+tokio = { version = "1.17.0", features = ["full"] }
+cascade = "1.0.0"
+float-cmp = "0.9.0"
+hex = "0.4.3"
+serde = "1.0.136"
+log = "0.4"
+pretty_env_logger = "0.4"
+gettext-rs = { version = "0.7", features = ["gettext-system"] }
+xdg = "2.4.1"
+
+[build-dependencies]
+gio = "0.15.10"
