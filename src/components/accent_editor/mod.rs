@@ -138,7 +138,6 @@ impl AccentEditor {
         if style_manager.system_supports_color_schemes() {
             style_manager.connect_color_scheme_notify(
                 glib::clone!(@weak self_ => move |style_manager| {
-                    dbg!(style_manager.is_dark());
                     self_.set_palette_buttons(style_manager.is_dark());
                     self_.set_accent();
                 }),
@@ -297,13 +296,13 @@ impl AccentEditor {
             // let window_bg_l = util::get_lch(sc.lookup_color("window_bg_color").unwrap()).l;
             (lch_c.l) = if is_dark {
                 Lch::<D65>::min_l()
-                // [view_bg_l, window_bg_l]    
+                // [view_bg_l, window_bg_l]
                 //     .into_iter()
                 //     .reduce(f32::min)
                 //     .unwrap()
             } else {
                 Lch::<D65>::max_l()
-                // [view_bg_l, window_bg_l]    
+                // [view_bg_l, window_bg_l]
                 //     .into_iter()
                 //     .reduce(f32::max)
                 //     .unwrap()
@@ -328,7 +327,7 @@ impl AccentEditor {
                     })
                     .into_color(),
             );
-            dbg!((fg_contrast, derived_accent_as_fg, derived_bg));
+
             let mut style = css_provider.to_str().to_string();
             style += &format!(
                 r#"
@@ -384,12 +383,14 @@ impl AccentEditor {
                 }
             };
             if use_palette_switch.is_active() && active {
-                imp.accent_button.get().unwrap().set_rgba(&c.accent_color_bg);
+                imp.accent_button
+                    .get()
+                    .unwrap()
+                    .set_rgba(&c.accent_color_bg);
             }
             palette_box.append(&button);
             palette_toggles.push(button);
         }
-
 
         imp.palette_buttons.replace(palette_toggles);
     }
