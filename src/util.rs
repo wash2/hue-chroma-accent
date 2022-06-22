@@ -49,6 +49,7 @@ pub fn get_lch(c: RGBA) -> Lch {
     c.into_format().into_color()
 }
 
+// TODO replace this with something better
 pub fn derive_color(
     mut lch_color: Lch,
     contrast: Option<f32>,
@@ -67,7 +68,6 @@ pub fn derive_color(
         let (mut l, mut r) = (min, max);
 
         for _ in 0..100 {
-            dbg!((l, r));
             let cur_guess_lightness = (l + r) / 2.0;
             let mut cur_guess = lch_color;
             cur_guess.l = cur_guess_lightness;

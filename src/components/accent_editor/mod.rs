@@ -258,7 +258,6 @@ impl AccentEditor {
                             - lch_c.chroma.powi(2)
                             - lch_c.hue.to_radians().powi(2))
                         .abs();
-                        dbg!(cur_d);
                         if pre_d < cur_d {
                             (pre_i, pre_d)
                         } else {
@@ -284,6 +283,7 @@ impl AccentEditor {
             );
             css_provider.load_from_data(style.as_bytes());
         } else {
+            // TODO derive colors with fixed lightness values that depend on color scheme mode
             // calculate colors automatically
             let derived_accent_as_fg: SRGB = SRGB(
                 util::derive_color(lch_c, Some(0.3), Some(is_dark))
