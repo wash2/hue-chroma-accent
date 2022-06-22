@@ -16,7 +16,7 @@ use adw::{
     ColorScheme,
 };
 use cascade::cascade;
-use palette::{IntoColor, Lch, Srgb, white_point::D65};
+use palette::{white_point::D65, IntoColor, Lch, Srgb};
 use relm4_macros::view;
 use std::fmt::Display;
 
@@ -250,10 +250,17 @@ impl AccentEditor {
                     .fold((0, f32::MAX), |(pre_i, pre_d), (i, cur_p)| {
                         let c_comp: Lch = SRGB::from(cur_p.accent_color_bg).0.into_color();
                         // TODO better distance calculation accounting for wrapping and with normalized values
-                        let cur_d = (c_comp.chroma.powi(2) + c_comp.hue.to_radians().powi(2)
-                            - lch_c.chroma.powi(2)
-                            - lch_c.hue.to_radians().powi(2))
+                        let dh = f32::min(
+                            c_comp.hue.to_degrees() - lch_c.hue.to_degrees(),
+                            360.0 - c_comp.hue.to_degrees() - lch_c.hue.to_degrees(),
+                        )
                         .abs();
+                        let dc = (c_comp.chroma - lch_c.chroma).abs();
+                        let cur_d = if c_comp.chroma < 64.0 {
+                            (dc.powi(2) + dh.powi(2))
+                        } else {
+                            (dc + dh.powi(2))
+                        };
                         if pre_d < cur_d {
                             (pre_i, pre_d)
                         } else {
@@ -280,6 +287,9 @@ impl AccentEditor {
             css_provider.load_from_data(style.as_bytes());
         } else {
             // derive colors automatically
+
+            // TODO get lightness from view_bg, window_bg, or headerbar_bg
+            // use the worst case for base lighness & contrast when deriving colors
             (lch_c.l) = if is_dark {
                 Lch::<D65>::min_l()
             } else {
@@ -290,17 +300,20 @@ impl AccentEditor {
             } else {
                 (SRGB(Srgb::new(0.0, 0.0, 0.0)), 7.0, 1.1) // 7.0 & 1.1 are minimum required
             };
-            let derived_accent_as_fg: SRGB = if let Ok(fg_c) = util::derive_color(lch_c, Some(fg_contrast), None) {
-                SRGB(fg_c.into_color())
-            } else {
-                derived_fg
-            };
-            let derived_bg: SRGB = SRGB(util::derive_color(lch_c, Some(bg_contrast), None)
-            .unwrap_or_else(|e| {
-                dbg!(e);
-                lch_c
-            })
-            .into_color());
+            let derived_accent_as_fg: SRGB =
+                if let Ok(fg_c) = util::derive_color(lch_c, Some(fg_contrast), None) {
+                    SRGB(fg_c.into_color())
+                } else {
+                    derived_fg
+                };
+            let derived_bg: SRGB = SRGB(
+                util::derive_color(lch_c, Some(bg_contrast), None)
+                    .unwrap_or_else(|e| {
+                        dbg!(e);
+                        lch_c
+                    })
+                    .into_color(),
+            );
 
             let mut style = css_provider.to_str().to_string();
             style += &format!(
@@ -333,7 +346,6 @@ impl AccentEditor {
         };
 
         for c in palette {
-            
             view! {
                 button = &ToggleButton {
                     add_css_class: "opaque",
