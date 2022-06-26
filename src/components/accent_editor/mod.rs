@@ -256,7 +256,7 @@ impl AccentEditor {
                         .abs();
                         let dc = (c_comp.chroma - lch_c.chroma).abs();
                         let cur_d = if c_comp.chroma < 64.0 {
-                            (dc.powi(2) + dh.powi(2))
+                            (dc.powi(2) + dh)
                         } else {
                             (dc + dh.powi(2))
                         };
