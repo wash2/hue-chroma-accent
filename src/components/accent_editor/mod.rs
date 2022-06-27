@@ -255,10 +255,10 @@ impl AccentEditor {
                         )
                         .abs();
                         let dc = (c_comp.chroma - lch_c.chroma).abs();
-                        let cur_d = if c_comp.chroma < 64.0 {
-                            (dc.powi(2) + dh)
+                        let cur_d = if c_comp.chroma < 20.0 {
+                            dc.powi(2) + dh
                         } else {
-                            (dc + dh.powi(2))
+                            dc + dh.powi(2)
                         };
                         if pre_d < cur_d {
                             (pre_i, pre_d)
